@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Arayüzü</title>
+  <style>
+    body {
+      background-color: #001f3f;
+      font-family: Arial, sans-serif;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
+    }
+    .container {
+      text-align: center;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #003366;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+    .button {
+      padding: 15px 30px;
+      margin: 10px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .button.led-on {
+      background-color: #28a745;
+      color: white;
+    }
+    .button.led-on:hover {
+      background-color: #218838;
+    }
+    .button.led-off {
+      background-color: #dc3545;
+      color: white;
+    }
+    .button.led-off:hover {
+      background-color: #c82333;
+    }
+    .info {
+      margin-top: 20px;
+      font-size: 1.5em;
+      background-color: #002244;
+      padding: 10px;
+      border-radius: 5px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>LED ve Ortam Bilgisi Kontrolü</h1>
+    <button class="button led-on" onclick="ledAc()">LED Aç</button>
+    <button class="button led-off" onclick="ledKapat()">LED Kapat</button>
+
+    <div class="info">
+      <p><strong>LED Durumu:</strong> <span id="ledDurum">-</span></p>
+    </div>
+    <div class="info">
+      <p><strong>Sıcaklık:</strong> <span id="sicaklik">- °C</span></p>
+    </div>
+    <div class="info">
+      <p><strong>En Yakın Nesne:</strong> <span id="mesafeDurum">-</span></p>
+    </div>
+  </div>
+
+  <script>
+    function ledAc() {
+      fetch('/ledon').then(response => console.log("LED açma komutu gönderildi"));
+    }
+
+    function ledKapat() {
+      fetch('/ledoff').then(response => console.log("LED kapatma komutu gönderildi"));
+    }
+
+    // Durumları her 0.5 saniyede bir güncelle
+    setInterval(() => {
+      fetch('/durum')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("ledDurum").textContent = data.ledDurum;
+          document.getElementById("sicaklik").textContent = `${data.sicaklik} °C`;
+          document.getElementById("mesafeDurum").textContent = data.mesafeDurum;
+        })
+        .catch(error => console.log('Durum verisi alınamadı:', error));
+    }, 500);
+  </script>
+</body>
+</html>
